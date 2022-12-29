@@ -11,3 +11,6 @@ class SalesOrder(models.Model):
     price = models.IntegerField()
     clothes = models.ManyToManyField(Clothes)
 
+    def __str__(self):
+        return self.name
+
