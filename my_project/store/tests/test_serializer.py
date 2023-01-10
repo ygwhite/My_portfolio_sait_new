@@ -19,7 +19,7 @@ class ClothesSerializerTestCase(TestCase):
             },
             {
                 'id': clothes_2.id,
-                'name': 'Рубашка тест 2',
+                'name': 'Кофта тест 2',
                 'description': 'Тест2',
                 'quantity': 150,
                 'price': '250.00',
