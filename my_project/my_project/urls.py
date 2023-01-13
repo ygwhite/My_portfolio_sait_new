@@ -14,11 +14,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include, re_path as url
 from rest_framework.routers import SimpleRouter
-
 from orders.views import orders_page, OrderView, orders_app
-from store.views import ClothesView
+from store.views import ClothesView, auth
 
 router = SimpleRouter()
 
@@ -26,8 +25,10 @@ router.register(r'clothes', ClothesView)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', orders_page),
-    path('orders_page/', orders_app)
+    url('', include('social_django.urls', namespace='social')),
+    path('orders_page/', orders_app),
+    path('auth/', auth),
+
 ]
 
 urlpatterns += router.urls
