@@ -40,6 +40,7 @@ class ClothesApiTestCase(APITestCase):
         self.assertEqual(serializer_data, response.data)
 
     def test_create(self):
+        self.assertEqual(3, Clothes.objects.all().count())
         url = reverse('clothes-list')
         data = {
             "name": "Футболка с длинным рукавом",
@@ -52,3 +53,29 @@ class ClothesApiTestCase(APITestCase):
         response = self.client.post(url, data=json_data,
                                    content_type='application/json')
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+        self.assertEqual(4, Clothes.objects.all().count())
+
+    def test_update(self):
+        url = reverse('clothes-detail', args=(self.clothes_1.id,))
+        data = {
+            "name": self.clothes_1.name,
+            "description": "Тест на апдейт",
+            "quantity": 55,
+            "price": 12397
+        }
+        json_data = json.dumps(data)
+        self.client.force_login(self.user)
+        response = self.client.put(url, data=json_data,
+                                   content_type='application/json')
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.clothes_1.refresh_from_db()
+        self.assertEqual(12397, self.clothes_1.price)
+        self.assertEqual("Тест на апдейт", self.clothes_1.description)
+
+    def test_delete(self):
+        url = reverse('clothes-detail', args=(self.clothes_3.id,))
+        self.client.force_login(self.user)
+        response = self.client.delete(url)
+        delete_data = ClothesSerializers([self.clothes_1], many=True).data
+        self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
+        self.clothes_1.refresh_from_db()
