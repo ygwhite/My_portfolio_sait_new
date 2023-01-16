@@ -74,8 +74,10 @@ class ClothesApiTestCase(APITestCase):
 
     def test_delete(self):
         url = reverse('clothes-detail', args=(self.clothes_3.id,))
+        url2 = reverse('clothes-list')
         self.client.force_login(self.user)
         response = self.client.delete(url)
-        delete_data = ClothesSerializers([self.clothes_1], many=True).data
+        delete_data = self.client.get(url2, data={'search': 'Свитер'})
         self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
         self.clothes_1.refresh_from_db()
+        self.assertEqual([], delete_data.data)
