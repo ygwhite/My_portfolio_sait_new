@@ -81,3 +81,37 @@ class ClothesApiTestCase(APITestCase):
         self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
         self.clothes_1.refresh_from_db()
         self.assertEqual([], delete_data.data)
+
+class ClothesApiTestRelation(APITestCase):
+    def setUp(self):
+        self.user1 = User.objects.create(username='user_test1')
+        self.user2 = User.objects.create(username='user_test2')
+        self.clothes_1 = Clothes.objects.create(name='Футболка тест 1',
+                                                    price=25,
+                                                    quantity=15,
+                                                    description='Тест1')
+        self.clothes_2 = Clothes.objects.create(name='Кофта тест 2',
+                                                    price=250,
+                                                    quantity=150,
+                                                    description='Тест2')
+        self.clothes_3 = Clothes.objects.create(name='Свитер тест 3',
+                                                    price=550,
+                                                    quantity=120,
+                                                    description='Тест3')
+
+    def test_like_favorites_rate(self):
+        url = reverse('userclotherelation-detail', args=(self.clothes_2.id, ))
+        self.client.force_login(self.user1)
+        data = {
+            "like": True,
+            "in_favorites": True,
+            "rate": 'Отлично'
+        }
+        json_data = json.dumps(data)
+        response = self.client.patch(url, data=json_data, content_type='application/json')
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.clothes_2.refresh_from_db()
+        self.assertTrue(self.clothes_2.like)
+        self.assertTrue(self.clothes_2.in_favorites)
+        self.assertTrue(self.clothes_2.rate)
+

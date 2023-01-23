@@ -7,6 +7,7 @@ class Clothes(models.Model):
     description = models.CharField(max_length=255)
     quantity = models.IntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    buyer = models.ManyToManyField(User, through='UserClotheRelation')
 
     def __str__(self):
         return self.name
@@ -22,7 +23,10 @@ class UserClotheRelation(models.Model):
     )
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    clothe = models.ForeignKey(Clothes, on_delete=models.CASCADE)
+    clothes = models.ForeignKey(Clothes, on_delete=models.CASCADE)
     like = models.BooleanField(default=False)
     in_favorites = models.BooleanField(default=False)
     rate = models.PositiveSmallIntegerField(choices=RATE_CHOICES)
+
+    def __str__(self):
+        return f'Пользователь: {self.user.username}; Товар: (№{self.clothes.id}){self.clothes.name}; Оценка пользователя: {self.rate}'

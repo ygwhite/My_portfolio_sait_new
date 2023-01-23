@@ -17,11 +17,12 @@ from django.contrib import admin
 from django.urls import path, include, re_path as url
 from rest_framework.routers import SimpleRouter
 from orders.views import orders_page, OrderView, orders_app
-from store.views import ClothesView, auth
+from store.views import ClothesView, auth, UserClothesRelationsView
 
 router = SimpleRouter()
 
 router.register(r'clothes', ClothesView)
+router.register(r'clothes_relation', UserClothesRelationsView)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
