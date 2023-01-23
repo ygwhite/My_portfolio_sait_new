@@ -29,5 +29,5 @@ class UserClothesRelationsView(UpdateModelMixin, GenericViewSet):
     lookup_field = 'clothes'
 
     def get_object(self):
-        pass
+
 
