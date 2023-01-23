@@ -30,3 +30,4 @@ class UserClothesRelationsView(UpdateModelMixin, GenericViewSet):
 
     def get_object(self):
         pass
+
