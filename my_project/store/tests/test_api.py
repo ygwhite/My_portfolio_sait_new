@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.authtoken.admin import User
 from rest_framework.test import APITestCase
 
-from store.models import Clothes
+from store.models import Clothes, UserClotheRelation
 from store.serializers import ClothesSerializers
 
 
@@ -29,7 +29,7 @@ class ClothesApiTestCase(APITestCase):
         url = reverse('clothes-list')
         response = self.client.get(url)
         serializer_data = ClothesSerializers([self.clothes_1, self.clothes_2, self.clothes_3], many=True).data
-        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(status.HTTP_200_OK, response.status_code, response.data)
         self.assertEqual(serializer_data, response.data)
 
     def test_get_search(self):
@@ -52,7 +52,7 @@ class ClothesApiTestCase(APITestCase):
         self.client.force_login(self.user)
         response = self.client.post(url, data=json_data,
                                    content_type='application/json')
-        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code, response.data)
         self.assertEqual(4, Clothes.objects.all().count())
 
     def test_update(self):
@@ -78,13 +78,13 @@ class ClothesApiTestCase(APITestCase):
         self.client.force_login(self.user)
         response = self.client.delete(url)
         delete_data = self.client.get(url2, data={'search': 'Свитер'})
-        self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
+        self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code, response.data)
         self.clothes_1.refresh_from_db()
         self.assertEqual([], delete_data.data)
 
 class ClothesApiTestRelation(APITestCase):
     def setUp(self):
-        self.user1 = User.objects.create(username='user_test1')
+        self.user = User.objects.create(username='user_test1')
         self.user2 = User.objects.create(username='user_test2')
         self.clothes_1 = Clothes.objects.create(name='Футболка тест 1',
                                                     price=25,
@@ -101,17 +101,17 @@ class ClothesApiTestRelation(APITestCase):
 
     def test_like_favorites_rate(self):
         url = reverse('userclotherelation-detail', args=(self.clothes_2.id, ))
-        self.client.force_login(self.user1)
         data = {
             "like": True,
             "in_favorites": True,
-            "rate": 'Отлично'
+            "rate": 4,
+
         }
         json_data = json.dumps(data)
+        self.client.force_login(self.user)
         response = self.client.patch(url, data=json_data, content_type='application/json')
-        self.assertEqual(status.HTTP_200_OK, response.status_code)
-        self.clothes_2.refresh_from_db()
-        self.assertTrue(self.clothes_2.like)
-        self.assertTrue(self.clothes_2.in_favorites)
-        self.assertTrue(self.clothes_2.rate)
-
+        self.assertEqual(status.HTTP_200_OK, response.status_code, response.data)
+        relation = UserClotheRelation.objects.get(user=self.user, clothes=self.clothes_2)
+        self.assertTrue(relation.like)
+        self.assertTrue(relation.in_favorites)
+        self.assertEqual(4, relation.rate)

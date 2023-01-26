@@ -22,6 +22,7 @@ class ClothesView(ModelViewSet):
 def auth(request):
     return render(request, 'oauth.html')
 
+
 class UserClothesRelationsView(UpdateModelMixin, GenericViewSet):
     permission_classes = [IsAuthenticated]
     queryset = UserClotheRelation.objects.all()
@@ -29,5 +30,6 @@ class UserClothesRelationsView(UpdateModelMixin, GenericViewSet):
     lookup_field = 'clothes'
 
     def get_object(self):
-
+        obj, _ = UserClotheRelation.objects.get_or_create(user=self.request.user, clothes_id=self.kwargs['clothes'])
+        return obj
 

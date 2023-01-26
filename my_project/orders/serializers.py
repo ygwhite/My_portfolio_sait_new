@@ -6,4 +6,4 @@ from orders.models import SalesOrder
 class OrderSeralizer(ModelSerializer):
     class Meta:
         model = SalesOrder
-        fields = ['name', 'price']
+        fields = '__all__'
