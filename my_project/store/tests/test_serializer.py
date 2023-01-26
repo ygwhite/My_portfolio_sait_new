@@ -30,6 +30,7 @@ class ClothesSerializerTestCase(TestCase):
                 'price': '13.00',
                 'quantity': 125,
                 'like_count': 0
+
             },
         ]
         print(serializer_data)
