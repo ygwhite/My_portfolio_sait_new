@@ -70,7 +70,7 @@ class ClothesApiTestCase(APITestCase):
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.clothes_1.refresh_from_db()
         self.assertEqual(12397, self.clothes_1.price)
-        self.assertEqual("Тест на апдейт", self.clothes_1.description)
+        self.assertEqual("Тест1", self.clothes_1.description)
 
     def test_delete(self):
         url = reverse('clothes-detail', args=(self.clothes_3.id,))
