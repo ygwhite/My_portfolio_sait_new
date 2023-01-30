@@ -1,5 +1,6 @@
 import json
 
+from django.db.models import Count, Case, When
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.authtoken.admin import User
@@ -28,14 +29,18 @@ class ClothesApiTestCase(APITestCase):
     def test_get(self):
         url = reverse('clothes-list')
         response = self.client.get(url)
-        serializer_data = ClothesSerializers([self.clothes_1, self.clothes_2, self.clothes_3], many=True).data
+        clothes = Clothes.objects.all().annotate(
+            annotated_likes=Count(Case(When(userclotherelation__like=True, then=1))))
+        serializer_data = ClothesSerializers(clothes, many=True).data
         self.assertEqual(status.HTTP_200_OK, response.status_code, response.data)
         self.assertEqual(serializer_data, response.data)
 
     def test_get_search(self):
         url = reverse('clothes-list')
+        clothes = Clothes.objects.filter(id__in=[self.clothes_1.id]).annotate(
+            annotated_likes=Count(Case(When(userclotherelation__like=True, then=1)))).order_by('id')
         response = self.client.get(url, data={'search': 'Футболка'})
-        serializer_data = ClothesSerializers([self.clothes_1], many=True).data
+        serializer_data = ClothesSerializers(clothes, many=True).data
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(serializer_data, response.data)
 

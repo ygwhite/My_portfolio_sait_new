@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.db.models import Count, Case, When, Avg
 from django.test import TestCase
 
 from store.models import Clothes, UserClotheRelation
@@ -18,13 +19,17 @@ class ClothesSerializerTestCase(TestCase):
                                            quantity=125
                                            )
 
-        UserClotheRelation.objects.create(user=user1, clothes=clothes_1, like=True)
-        UserClotheRelation.objects.create(user=user2, clothes=clothes_1, like=True)
+        UserClotheRelation.objects.create(user=user1, clothes=clothes_1, like=True, rate=5)
+        UserClotheRelation.objects.create(user=user2, clothes=clothes_1, like=True, rate=2)
 
-        UserClotheRelation.objects.create(user=user1, clothes=clothes_2, like=False)
+        UserClotheRelation.objects.create(user=user1, clothes=clothes_2, like=False, rate=5)
         UserClotheRelation.objects.create(user=user2, clothes=clothes_2, like=True)
 
-        serializer_data = ClothesSerializers([clothes_1, clothes_2], many=True).data
+        clothes = Clothes.objects.all().annotate(
+            annotated_likes=Count(Case(When(userclotherelation__like=True, then=1))),
+            rating=Avg('userclotherelation__rate')
+        ).order_by('id')
+        serializer_data = ClothesSerializers(clothes, many=True).data
         expected_data = [
             {
                 'id': clothes_1.id,
@@ -32,6 +37,8 @@ class ClothesSerializerTestCase(TestCase):
                 'price': '25.00',
                 'quantity': 123,
                 'like_count': 2,
+                'annotated_likes': 2,
+                'rating': '3.50',
 
             },
             {
@@ -39,7 +46,9 @@ class ClothesSerializerTestCase(TestCase):
                 'name': 'тест 5',
                 'price': '13.00',
                 'quantity': 125,
-                'like_count': 1
+                'like_count': 1,
+                'annotated_likes': 1,
+                'rating': '5.00',
 
             },
         ]

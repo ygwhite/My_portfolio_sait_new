@@ -1,3 +1,4 @@
+from django.db.models import Count, Case, When
 from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
@@ -10,7 +11,8 @@ from store.serializers import ClothesSerializers, UserClotheRelationSerializers
 
 
 class ClothesView(ModelViewSet):
-    queryset = Clothes.objects.all()
+    queryset = Clothes.objects.all().annotate(
+            annotated_likes=Count(Case(When(userclotherelation__like=True, then=1))))
     serializer_class = ClothesSerializers
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     permission_classes = [IsAuthenticatedOrReadOnly]
