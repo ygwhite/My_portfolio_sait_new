@@ -1,6 +1,6 @@
 import json
 
-from django.db.models import Count, Case, When
+from django.db.models import Count, Case, When, Avg
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.authtoken.admin import User
@@ -30,15 +30,16 @@ class ClothesApiTestCase(APITestCase):
         url = reverse('clothes-list')
         response = self.client.get(url)
         clothes = Clothes.objects.all().annotate(
-            annotated_likes=Count(Case(When(userclotherelation__like=True, then=1))))
+            annotated_likes=Count(Case(When(userclotherelation__like=True, then=1))),
+            rating=Avg('userclotherelation__rate')
+        ).order_by('id')
         serializer_data = ClothesSerializers(clothes, many=True).data
         self.assertEqual(status.HTTP_200_OK, response.status_code, response.data)
         self.assertEqual(serializer_data, response.data)
 
     def test_get_search(self):
         url = reverse('clothes-list')
-        clothes = Clothes.objects.filter(id__in=[self.clothes_1.id]).annotate(
-            annotated_likes=Count(Case(When(userclotherelation__like=True, then=1)))).order_by('id')
+        clothes = Clothes.objects.filter(id__in=[self.clothes_1.id]).annotate(annotated_likes=Count(Case(When(userclotherelation__like=True, then=1))), rating=Avg('userclotherelation__rate'))
         response = self.client.get(url, data={'search': 'Футболка'})
         serializer_data = ClothesSerializers(clothes, many=True).data
         self.assertEqual(status.HTTP_200_OK, response.status_code)
