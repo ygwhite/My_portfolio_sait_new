@@ -36,7 +36,6 @@ class ClothesSerializerTestCase(TestCase):
                 'name': 'тест 3',
                 'price': '25.00',
                 'quantity': 123,
-                'like_count': 2,
                 'annotated_likes': 2,
                 'rating': '3.50',
 
@@ -46,7 +45,6 @@ class ClothesSerializerTestCase(TestCase):
                 'name': 'тест 5',
                 'price': '13.00',
                 'quantity': 125,
-                'like_count': 1,
                 'annotated_likes': 1,
                 'rating': '5.00',
 

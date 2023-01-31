@@ -25,6 +25,7 @@ class ClothesApiTestCase(APITestCase):
                                                 price=550,
                                                 quantity=120,
                                                 description='Тест3')
+        UserClotheRelation.objects.create(user=self.user, clothes=self.clothes_1, like=True, rate=5)
 
     def test_get(self):
         url = reverse('clothes-list')
@@ -36,6 +37,9 @@ class ClothesApiTestCase(APITestCase):
         serializer_data = ClothesSerializers(clothes, many=True).data
         self.assertEqual(status.HTTP_200_OK, response.status_code, response.data)
         self.assertEqual(serializer_data, response.data)
+        self.assertEqual(serializer_data[0]['rating'], '5.00')
+        self.assertEqual(serializer_data[0]['annotated_likes'], 1)
+
 
     def test_get_search(self):
         url = reverse('clothes-list')
