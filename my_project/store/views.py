@@ -12,8 +12,7 @@ from store.serializers import ClothesSerializers, UserClotheRelationSerializers
 
 class ClothesView(ModelViewSet):
     queryset = Clothes.objects.all().annotate(
-            annotated_likes=Count(Case(When(userclotherelation__like=True, then=1))),
-            rating=Avg('userclotherelation__rate')
+            annotated_likes=Count(Case(When(userclotherelation__like=True, then=1)))
         ).order_by('id')
     serializer_class = ClothesSerializers
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]

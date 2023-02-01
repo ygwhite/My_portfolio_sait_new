@@ -26,8 +26,7 @@ class ClothesSerializerTestCase(TestCase):
         UserClotheRelation.objects.create(user=user2, clothes=clothes_2, like=True)
 
         clothes = Clothes.objects.all().annotate(
-            annotated_likes=Count(Case(When(userclotherelation__like=True, then=1))),
-            rating=Avg('userclotherelation__rate')
+            annotated_likes=Count(Case(When(userclotherelation__like=True, then=1)))
         ).order_by('id')
         serializer_data = ClothesSerializers(clothes, many=True).data
         expected_data = [
