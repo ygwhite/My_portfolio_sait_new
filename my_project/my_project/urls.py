@@ -29,8 +29,7 @@ urlpatterns = [
     path('__debug__/', include('debug_toolbar.urls')),
     url('', include('social_django.urls', namespace='social')),
     path('orders_page/', orders_app),
-    path('auth/', auth, include('djoser.urls')),
-    path('api-auth', include('rest_framework.urls')),
+    path('auth/', auth),
 
 ]
 
