@@ -39,11 +39,27 @@ INSTALLED_APPS = [
     "debug_toolbar",
     'social_django',
     'rest_framework.authtoken',
+    'djoser',
+    'rest_framework',
 
     'store',
     'orders',
-
+    'users_auth',
 ]
+
+DJOSER = {
+    'ACTIVATION_URL': '#/activate/{uid}/{token}',
+    'SEND_ACTIVATION_EMAIL': False,
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+}
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 INTERNAL_IPS = [
     "127.0.0.1",
