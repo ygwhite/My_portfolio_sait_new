@@ -30,6 +30,8 @@ urlpatterns = [
     url('', include('social_django.urls', namespace='social')),
     path('orders_page/', orders_app),
     path('auth/', auth),
+    path('api-auth', include('rest_framework.urls')),
+    path('auth/', include('djoser.urls')),
 
 ]
 
