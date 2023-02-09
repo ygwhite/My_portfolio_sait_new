@@ -1,4 +1,3 @@
-
 """
 Django settings for my_project project.
 
@@ -11,9 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 import os
+from datetime import timedelta
 from pathlib import Path
 import django
 from django.utils.encoding import force_str
+
 django.utils.encoding.force_text = force_str
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,27 +41,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'debug_toolbar',
-    'social_django',
+    'rest_framework',
     'rest_framework.authtoken',
     'djoser',
-    'rest_framework',
 
     'store',
     'orders',
 
 ]
-
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-    ],
-}
-
-DJOSER = {
-    'ACTIVATION_URL': '#/activate/{uid}/{token}',
-    'SEND_ACTIVATION_EMAIL': False,
-}
 
 INTERNAL_IPS = [
     "127.0.0.1",
@@ -157,22 +145,16 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PARSER_CLASSES': (
         'rest_framework.parsers.JSONParser',
-    )
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser'
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAdminUser',
+    ),
 }
-
-SOCIAL_AUTH_JSONFIELD_ENABLED = True
-
-AUTHENTICATION_BACKENDS = (
-    'social_core.backends.github.GithubOAuth2',
-
-    # ==========================================
-    'django.contrib.auth.backends.ModelBackend',
-)
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-SOCIAL_AUTH_GITHUB_KEY = 'ef5add316c604e1b37c1'
-SOCIAL_AUTH_GITHUB_SECRET = '12abd1b710c1f70e4857fd6b0e13d6b6c0b60dd1'

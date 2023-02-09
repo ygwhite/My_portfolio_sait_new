@@ -1,7 +1,10 @@
+import generics as generics
 from django.db.models import Count, Case, When, Avg
 from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.mixins import UpdateModelMixin
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
@@ -12,8 +15,8 @@ from store.serializers import ClothesSerializers, UserClotheRelationSerializers
 
 class ClothesView(ModelViewSet):
     queryset = Clothes.objects.all().annotate(
-            annotated_likes=Count(Case(When(userclotherelation__like=True, then=1)))
-        ).order_by('id')
+        annotated_likes=Count(Case(When(userclotherelation__like=True, then=1)))
+    ).order_by('id')
     serializer_class = ClothesSerializers
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     permission_classes = [IsAuthenticatedOrReadOnly]
@@ -22,12 +25,9 @@ class ClothesView(ModelViewSet):
     ordering_fields = ['name', 'price']
 
 
-def auth(request):
-    return render(request, 'oauth.html')
-
-
 class UserClothesRelationsView(UpdateModelMixin, GenericViewSet):
     permission_classes = [IsAuthenticated]
+    # authentication_classes = (TokenAuthentication)
     queryset = UserClotheRelation.objects.all()
     serializer_class = UserClotheRelationSerializers
     lookup_field = 'clothes'
@@ -35,4 +35,3 @@ class UserClothesRelationsView(UpdateModelMixin, GenericViewSet):
     def get_object(self):
         obj, _ = UserClotheRelation.objects.get_or_create(user=self.request.user, clothes_id=self.kwargs['clothes'])
         return obj
-

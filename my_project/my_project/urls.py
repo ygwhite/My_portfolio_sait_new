@@ -14,10 +14,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include, re_path as url
+from django.urls import path, include, re_path
 from rest_framework.routers import SimpleRouter
-from orders.views import orders_page, OrderView, orders_app
-from store.views import ClothesView, auth, UserClothesRelationsView
+# from orders.views import orders_page, OrderView, orders_app
+from orders.views import orders_app
+from store.views import ClothesView, UserClothesRelationsView
+from rest_framework.authtoken.views import obtain_auth_token
 
 router = SimpleRouter()
 
@@ -25,14 +27,14 @@ router.register(r'clothes', ClothesView)
 router.register(r'clothes_relation', UserClothesRelationsView)
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('__debug__/', include('debug_toolbar.urls')),
-    url('', include('social_django.urls', namespace='social')),
-    path('orders_page/', orders_app),
-    path('auth/', auth),
-    path('api-auth', include('rest_framework.urls')),
-    path('auth/', include('djoser.urls')),
+    path('api/v1/auth/', include('djoser.urls')),
+    re_path(r'^auth/', include('djoser.urls.authtoken')),
 
+    path('admin/', admin.site.urls),
+
+    path('__debug__/', include('debug_toolbar.urls')),
+
+    path('orders_page/', orders_app),
 ]
 
 urlpatterns += router.urls
