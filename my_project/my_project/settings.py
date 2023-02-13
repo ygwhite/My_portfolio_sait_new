@@ -44,11 +44,21 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
+    'ckeditor',
+    'ckeditor_uploader',
 
     'store',
     'orders',
 
 ]
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+CART_SESSION_ID = 'cart'
+
+CKEDITOR_UPLOAD_PATH = "uploads/"
 
 INTERNAL_IPS = [
     "127.0.0.1",
@@ -136,6 +146,7 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Rest Framework
 

@@ -13,13 +13,21 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include, re_path
 from rest_framework.routers import SimpleRouter
 # from orders.views import orders_page, OrderView, orders_app
 from orders.views import orders_app
 from store.views import ClothesView, UserClothesRelationsView
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from orders.views import CartViewSet
 from rest_framework.authtoken.views import obtain_auth_token
+
+router = DefaultRouter()
+router.register('cart', CartViewSet, basename='cart')
 
 router = SimpleRouter()
 
@@ -27,14 +35,20 @@ router.register(r'clothes', ClothesView)
 router.register(r'clothes_relation', UserClothesRelationsView)
 
 urlpatterns = [
-    path('api/v1/auth/', include('djoser.urls')),
-    re_path(r'^auth/', include('djoser.urls.authtoken')),
-
     path('admin/', admin.site.urls),
+
+    path('api/v1/auth/', include('djoser.urls')),
+    path('ckeditor/', include('ckeditor_uploader.urls')),
+    re_path(r'^auth/', include('djoser.urls.authtoken')),
 
     path('__debug__/', include('debug_toolbar.urls')),
 
     path('orders_page/', orders_app),
+    path('api/cart/', include(router.urls))
+
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += router.urls

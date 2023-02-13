@@ -12,3 +12,7 @@ class SalesOrder(models.Model):
     clothes = models.ManyToManyField(Clothes)
 
 
+class CartItem(models.Model):
+    clothes_id = models.PositiveIntegerField()
+    quantity = models.PositiveIntegerField()
+
